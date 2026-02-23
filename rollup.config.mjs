@@ -26,7 +26,7 @@ export default [
     watch: {
       exclude: 'node_modules/**',
     },
-    plugins: [commonjs(), resolve(), typescript()],
+    plugins: [commonjs(), resolve(), typescript({ declaration: true, declarationDir: 'dist' })],
     external: ['monaco-editor'],
   },
   {

@@ -9,7 +9,7 @@
   ],
   "main": "dist/emmet-monaco.common.js",
   "module": "dist/emmet-monaco.esm.js",
-  "typings": "index.d.ts",
+  "typings": "dist/index.d.ts",
   "scripts": {
     "watch": "rollup -c --watch",
     "build": "rollup -c"
