@@ -75,6 +75,18 @@ registerCustomSnippets('html', {
 </script>
 ```
 
+## External Syntax Highlighters
+
+By default, emmet-monaco-es uses Monaco's built-in Monarch tokenizer to detect valid abbreviation locations. When using an external syntax highlighter (e.g. [shiki](https://github.com/shikijs/shiki)), Monarch tokens are unavailable, and emmet will not work correctly.
+
+Pass `{ tokenizer: 'standard' }` as the options argument to use Monaco's `StandardTokenType` API instead:
+
+```javascript
+emmetHTML(monaco, ['html'], { tokenizer: 'standard' })
+emmetCSS(monaco, ['css'], { tokenizer: 'standard' })
+emmetJSX(monaco, ['javascript'], { tokenizer: 'standard' })
+```
+
 ## Limitation
 
 Does **NOT** support Emmet for embed CSS inside HTML / JSX / TSX
