@@ -50,7 +50,8 @@ function registerProvider(monaco: typeof Monaco | undefined, languages: string[]
   if (!monaco) {
     console.error("emmet-monaco-es: 'monaco' should be either declared on window or passed as first parameter")
 
-    return
+    // Return a noop dispose function to avoid errors when calling the returned cleanup function
+    return () => {}
   }
 
   const providers = languages.map((language) =>
