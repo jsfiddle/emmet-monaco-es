@@ -1,5 +1,10 @@
 import type * as Monaco from 'monaco-editor'
 
+export type Tokenizer = 'monarch' | 'standard'
+export interface EmmetOptions {
+  tokenizer?: Tokenizer
+}
+
 interface Token {
   readonly offset: number
   readonly type: string
@@ -90,14 +95,49 @@ function getTokenizationEnv(model: any) {
   return env
 }
 
-// vscode did a complex node analysis, we just use monaco's built-in tokenizer
-// to achieve almost the same effect
-export function isValidLocationForEmmetAbbreviation(
+// When a non-Monarch grammar (e.g. shiki / TextMate) is active, the internal
+// Monarch token types are unavailable. Instead we use Monaco's public
+// tokenization API which exposes StandardTokenType (Comment, String, RegEx)
+// regardless of the underlying grammar engine.
+function isValidLocationStandard(
   model: Monaco.editor.ITextModel,
   position: Monaco.Position,
   syntax: string,
   language: string,
-) {
+): boolean {
+  const tokenization = (model as any).tokenization;
+  if (typeof tokenization?.getLineTokens !== 'function') {
+    console.warn('emmet-monaco-es: Standard tokenizer may not be supported in this version of monaco-editor. Falling back to Monarch tokenizer for emmet abbreviation detection.')
+    return isValidLocationMonarch(model, position, syntax, language)
+  }
+
+  const { column, lineNumber } = position
+  const lineTokens = tokenization.getLineTokens(lineNumber)
+  let tokenIndex = -1
+  for (let i = lineTokens.getCount() - 1; i >= 0; i--) {
+    if (column - 1 > lineTokens.getStartOffset(i)) {
+      tokenIndex = i
+      break
+    }
+  }
+
+  if (tokenIndex < 0) return false
+  
+  // StandardTokenType: Other=0, Comment=1, String=2, RegEx=3
+  const standardType = lineTokens.getStandardTokenType(tokenIndex)
+  if (standardType !== 0) return false
+
+  return true
+}
+
+// vscode did a complex node analysis, we just use monaco's built-in tokenizer
+// to achieve almost the same effect
+function isValidLocationMonarch(
+  model: Monaco.editor.ITextModel,
+  position: Monaco.Position,
+  syntax: string,
+  language: string,
+): boolean {
   const { column, lineNumber } = position
 
   // get current line's tokens
@@ -120,4 +160,18 @@ export function isValidLocationForEmmetAbbreviation(
   }
 
   return valid
+}
+
+export function isValidLocationForEmmetAbbreviation(
+  model: Monaco.editor.ITextModel,
+  position: Monaco.Position,
+  syntax: string,
+  language: string,
+  options?: EmmetOptions,
+) {
+  if (options?.tokenizer === 'standard') {
+    return isValidLocationStandard(model, position, syntax, language)
+  }
+
+  return isValidLocationMonarch(model, position, syntax, language)
 }

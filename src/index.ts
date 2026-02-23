@@ -1,7 +1,7 @@
 import type * as Monaco from 'monaco-editor'
 
 import { doComplete, type VSCodeEmmetConfig } from './emmetHelper'
-import { isValidLocationForEmmetAbbreviation } from './abbreviationActions'
+import { EmmetOptions, isValidLocationForEmmetAbbreviation } from './abbreviationActions'
 
 declare global {
   interface Window {
@@ -47,7 +47,7 @@ const DEFAULT_CONFIG: VSCodeEmmetConfig = {
  * @param isLegalToken check whether given token is legal or not
  * @param getLegalEmmetSets get legal emmet substring from a string.
  */
-function registerProvider(monaco: typeof Monaco | undefined, languages: string[], syntax: string) {
+function registerProvider(monaco: typeof Monaco | undefined, languages: string[], syntax: string, options?: EmmetOptions) {
   if (!monaco) {
     console.error("emmet-monaco-es: 'monaco' should be either declared on window or passed as first parameter")
 
@@ -58,7 +58,7 @@ function registerProvider(monaco: typeof Monaco | undefined, languages: string[]
     monaco.languages.registerCompletionItemProvider(language, {
       triggerCharacters: LANGUAGE_MODES[MAPPED_MODES[language] || language],
       provideCompletionItems: (model, position) =>
-        isValidLocationForEmmetAbbreviation(model, position, syntax, language)
+        isValidLocationForEmmetAbbreviation(model, position, syntax, language, options)
           ? doComplete(monaco!, model, position, syntax, DEFAULT_CONFIG)
           : undefined,
     }),
@@ -69,16 +69,16 @@ function registerProvider(monaco: typeof Monaco | undefined, languages: string[]
   }
 }
 
-export function emmetHTML(monaco = window.monaco, languages: string[] = ['html']) {
-  return registerProvider(monaco, languages, 'html')
+export function emmetHTML(monaco = window.monaco, languages: string[] = ['html'], options?: EmmetOptions) {
+  return registerProvider(monaco, languages, 'html', options)
 }
 
-export function emmetCSS(monaco = window.monaco, languages: string[] = ['css']) {
-  return registerProvider(monaco, languages, 'css')
+export function emmetCSS(monaco = window.monaco, languages: string[] = ['css'], options?: EmmetOptions) {
+  return registerProvider(monaco, languages, 'css', options)
 }
 
-export function emmetJSX(monaco = window.monaco, languages: string[] = ['javascript']) {
-  return registerProvider(monaco, languages, 'jsx')
+export function emmetJSX(monaco = window.monaco, languages: string[] = ['javascript'], options?: EmmetOptions) {
+  return registerProvider(monaco, languages, 'jsx', options)
 }
 
 export { expandAbbreviation, registerCustomSnippets } from './emmetHelper'
