@@ -42,10 +42,8 @@ const DEFAULT_CONFIG: VSCodeEmmetConfig = {
 /**
  * add completion provider
  * @param monaco monaco self
- * @param language added language
- * @param isMarkup is markup language
- * @param isLegalToken check whether given token is legal or not
- * @param getLegalEmmetSets get legal emmet substring from a string.
+ * @param languages language IDs to register the completion provider for
+ * @param syntax emmet syntax profile to use, e.g. 'html', 'css', 'jsx'
  * @param options emmet options. `options.tokenizer` sets the tokenizer engine, default `'Monarch'`. Use `'Standard'` when a non-Monarch grammar (e.g. shiki) is active.
  */
 function registerProvider(monaco: typeof Monaco | undefined, languages: string[], syntax: string, options?: EmmetOptions) {
@@ -73,7 +71,7 @@ function registerProvider(monaco: typeof Monaco | undefined, languages: string[]
 /**
  * emmet for `HTML`
  * @param monaco monaco self, if not provided, will use window.monaco
- * @param languages languages needs to support, default `['html']`. Should support any HTML compatible languages like `php`,`twig`
+ * @param languages language IDs to support, default `['html']`. Should support any HTML compatible languages like `php`,`twig`
  * @param options emmet options. `options.tokenizer` sets the tokenizer engine, default `'Monarch'`. Use `'Standard'` when a non-Monarch grammar (e.g. shiki) is active.
  */
 export function emmetHTML(monaco = window.monaco, languages = ['html'], options?: EmmetOptions) {
@@ -83,7 +81,7 @@ export function emmetHTML(monaco = window.monaco, languages = ['html'], options?
 /**
  * emmet for `CSS` / `LESS` / `SCSS`
  * @param monaco monaco self, if not provided, will use window.monaco
- * @param languages languages needs to support, default `['css']`. Should support any CSS compatible languages like `scss`,`less`
+ * @param languages language IDs to support, default `['css']`. Should support any CSS compatible languages like `scss`,`less`
  * @param options emmet options. `options.tokenizer` sets the tokenizer engine, default `'Monarch'`. Use `'Standard'` when a non-Monarch grammar (e.g. shiki) is active.
  */
 export function emmetCSS(monaco = window.monaco, languages = ['css'], options?: EmmetOptions) {
@@ -93,7 +91,7 @@ export function emmetCSS(monaco = window.monaco, languages = ['css'], options?: 
 /**
  * emmet for `JSX` / `TSX`
  * @param monaco monaco self, if not provided, will use window.monaco
- * @param languages languages needs to support, default `['javascript']`. Should support any jsx compatible languages like `typescript`
+ * @param languages language IDs to support, default `['javascript']`. Should support any jsx compatible languages like `typescript`
  * @param options emmet options. `options.tokenizer` sets the tokenizer engine, default `'Monarch'`. Use `'Standard'` when a non-Monarch grammar (e.g. shiki) is active.
  */
 export function emmetJSX(monaco = window.monaco, languages = ['javascript'], options?: EmmetOptions) {
